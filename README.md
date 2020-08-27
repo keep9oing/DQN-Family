@@ -10,17 +10,19 @@ MountainCar-v0 is used for experiment.
 * numpy
 
 # Mountain Car
+![alt text](https://https://github.com/keep9oing/DQN-Family/assets/gifs/MountainCar.gif "Logo Title Text 1")
+<img src="https://https://github.com/keep9oing/DQN-Family/assets/imgs/MountainCar.png" width="90%"></img>
 
 Rewards per episodes training.
-DQN: Orange
-Double DQN: Blue
+DQN: Blue
+Double DQN: Pink
 
 # Test result
 
-test with 0 epsilon. 1000 times average reward.
+test with 0 epsilon. 1k times average reward.
 
-* DQN: -147.124
-* Double DQN: -175.729
+* DQN: -131.131
+* Double DQN: -128.632
 
 # TODO
 - [x] DQN
