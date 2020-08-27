@@ -10,11 +10,13 @@ MountainCar-v0 is used for experiment.
 * numpy
 
 # Mountain Car
-![alt text](https://https://github.com/keep9oing/DQN-Family/assets/gifs/MountainCar.gif "Logo Title Text 1")
-<img src="https://https://github.com/keep9oing/DQN-Family/assets/imgs/MountainCar.png" width="90%"></img>
+![MountainCarGIF](./assets/gifs/MountainCar.gif)
+![MountainCarReward](./assets/imgs/MountainCar.png)
 
 Rewards per episodes training.
+
 DQN: Blue
+
 Double DQN: Pink
 
 # Test result
