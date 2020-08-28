@@ -25,13 +25,22 @@ Double DQN: Blue
 
 Rewards per episodes training.
 
-DQN: Blue
+DQN: Orange
 
-Double DQN: Pink
+Double DQN: Blue
+
+Dueling DQN: Pink
+
+D3QN: Silver
 
 
 # TODO
 - [x] DQN
 - [x] Double DQN
-- [ ] Dueling DQN
-- [ ] Dueling Double DQN
+- [x] Dueling DQN
+- [x] Dueling Double DQN
+- [ ] PER
+- [ ] NoiseNet
+- [ ] C51
+- [ ] Rainbow
+- [ ] CNN

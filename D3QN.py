@@ -21,20 +21,26 @@ class Q_net(nn.Module):
         assert state_space is not None, "None state_space input: state_space should be selected."
         assert action_space is not None, "None action_space input: action_space should be selected."
 
-        self.Linear1 = nn.Linear(state_space, 64)
-        self.Linear2 = nn.Linear(64, 64)
-        self.Linear3 = nn.Linear(64, action_space)
+        self.Feature_layer = nn.Linear(state_space, 64)
+        self.Feature_value = nn.Linear(64, 32)
+        self.Feature_advantage = nn.Linear(64, 32)
+        self.Value_layer = nn.Linear(32, 1)
+        self.Advantage_layer = nn.Linear(32, action_space)
 
     def forward(self, x):
-        x = F.relu(self.Linear1(x))
-        x = F.relu(self.Linear2(x))
-        return self.Linear3(x)
+        feature = F.relu(self.Feature_layer(x))
+        value_feature = F.relu(self.Feature_value(feature))
+        advantage_feature = F.relu(self.Feature_advantage(feature))
+        value = F.relu(self.Value_layer(value_feature))
+        advantage = F.relu(self.Advantage_layer(advantage_feature))
+        return value + advantage - advantage.mean()
 
     def sample_action(self, obs, epsilon):
         if random.random() < epsilon:
             return random.randint(0,1)
         else:
             return self.forward(obs).argmax().item()
+
 
 
 # Replay buffer
@@ -82,8 +88,10 @@ def train(q_net=None, target_q_net=None, replay_buffer=None,
         s, a, r, s_prime, done_mask = replay_buffer.sample(sample_size=batch_size, device=device)
 
         # Define loss
-        q_target_max = target_q_net(s_prime).max(1)[0].unsqueeze(1).detach()
-        target = r + gamma*q_target_max*done_mask
+        argmax_q_net = q_net(s_prime).argmax(1).unsqueeze(1)
+        q_target = target_q_net(s_prime).detach().gather(1, argmax_q_net)
+        target = r + gamma*q_target*done_mask 
+
         q_out = q_net(s)
         q_a = q_out.gather(1, a)
         loss = F.smooth_l1_loss(q_a, target)
@@ -96,14 +104,14 @@ def train(q_net=None, target_q_net=None, replay_buffer=None,
 
 if __name__ == "__main__":
 
-    env_name = "MountainCar-v0"
-    exp_num = '1'
+    env_name = "LunarLander-v2"
+    exp_num = '2'
 
     if torch.cuda.is_available():
         device = torch.device("cuda")
 
     # default `log_dir` is "runs" - we'll be more specific here
-    writer = SummaryWriter('runs/'+env_name+'_DQN_'+exp_num)
+    writer = SummaryWriter('runs/'+env_name+'_D3QN_'+exp_num)
 
     # Set parameters
     batch_size = 64
@@ -154,7 +162,7 @@ if __name__ == "__main__":
 
             # Do action
             s_prime, r, done, _ = env.step(a)
-            r += s_prime[0]
+            # r += s_prime[0] ## For MountainCar
 
             # make data
             done_mask = 0.0 if done else 1.0
@@ -198,4 +206,4 @@ if __name__ == "__main__":
     def save_model(model, path='default.pth'):
         torch.save(model.state_dict(), path)
     
-    save_model(Q,'DQN_'+exp_num+'.pth')
+    save_model(Q,'D3QN_'+exp_num+'.pth')

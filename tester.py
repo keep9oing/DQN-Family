@@ -1,7 +1,11 @@
 import gym
 import torch
-import dqn
-import ddqn
+
+import DQN
+import DDQN
+import Dueling_DQN
+import D3QN
+
 from torch.distributions import Categorical
 
 import matplotlib.pyplot as plt
@@ -24,9 +28,9 @@ else: # Use CPU
 # load environment
 env = gym.make('LunarLander-v2')
 
-model = ddqn.Q_net(state_space=env.observation_space.shape[0], 
+model = D3QN.Q_net(state_space=env.observation_space.shape[0], 
               action_space=env.action_space.n).to(device)
-model.load_state_dict(torch.load('DDQN.pth', map_location=device))
+model.load_state_dict(torch.load('D3QN_2.pth', map_location=device))
 
 # Test setting
 episodes = 1000
