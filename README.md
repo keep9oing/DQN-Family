@@ -1,7 +1,7 @@
 # DQN-Family
 
 Comparison DQN variations with pytorch. 
-MountainCar-v0 is used for experiment.
+MountainCar-v0, LunarLander-v2 is used for experiment.
 
 # Requirement
 * pytorch
@@ -19,7 +19,7 @@ DQN: Orange
 
 Double DQN: Blue
 
-# Mountain Car
+# LunarLander
 ![LunarLanderGIF](./assets/gifs/LunarLander.gif)
 ![LunarLanderReward](./assets/imgs/LunarLander.png)
 
