@@ -15,16 +15,20 @@ MountainCar-v0 is used for experiment.
 
 Rewards per episodes training.
 
+DQN: Orange
+
+Double DQN: Blue
+
+# Mountain Car
+![LunarLanderGIF](./assets/gifs/LunarLander.gif)
+![LunarLanderReward](./assets/imgs/LunarLander.png)
+
+Rewards per episodes training.
+
 DQN: Blue
 
 Double DQN: Pink
 
-# Test result
-
-test with 0 epsilon. 1k times average reward.
-
-* DQN: -131.131
-* Double DQN: -128.632
 
 # TODO
 - [x] DQN

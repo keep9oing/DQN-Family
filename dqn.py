@@ -21,9 +21,9 @@ class Q_net(nn.Module):
         assert state_space is not None, "None state_space input: state_space should be selected."
         assert action_space is not None, "None action_space input: action_space should be selected."
 
-        self.Linear1 = nn.Linear(state_space, 128)
-        self.Linear2 = nn.Linear(128, 128)
-        self.Linear3 = nn.Linear(128, action_space)
+        self.Linear1 = nn.Linear(state_space, 64)
+        self.Linear2 = nn.Linear(64, 64)
+        self.Linear3 = nn.Linear(64, action_space)
 
     def forward(self, x):
         x = F.relu(self.Linear1(x))
@@ -107,12 +107,17 @@ if __name__ == "__main__":
 
     # Set parameters
     batch_size = 64
-    learning_rate = 0.0001
-    buffer_len = 100000
-    min_buffer_len = 10000
-    episodes = 60000
-    print_per_iter = 500
-    target_update_period = 30
+    learning_rate = 0.0005
+    buffer_len = int(100000)
+    min_buffer_len = 64
+    episodes = 2000
+    print_per_iter = 100
+    target_update_period = 4
+    eps_start = 1.0
+    eps_end = 0.01
+    eps_decay = 0.995
+    tau = 1e-3
+    max_step = 2000
 
     # Set gym environment
     env = gym.make(env_name)
@@ -133,13 +138,14 @@ if __name__ == "__main__":
     score_sum = 0
     optimizer = optim.Adam(Q.parameters(), lr=learning_rate)
 
+    epsilon = eps_start
+
     # Train
     for i in range(episodes):
         s = env.reset()
         done = False
-        epsilon = max(0.001, 1 - 0.0001*i) #Linear annealing 
-
-        while not done:
+        
+        for t in range(max_step):
             # if i % print_per_iter == 0:
             #     env.render()
 
@@ -148,8 +154,7 @@ if __name__ == "__main__":
 
             # Do action
             s_prime, r, done, _ = env.step(a)
-            # print(s_prime[0])
-            r = r+s_prime[0]
+            r += s_prime[0]
 
             # make data
             done_mask = 0.0 if done else 1.0
@@ -158,14 +163,22 @@ if __name__ == "__main__":
             
             score += r
             score_sum += r
+
+
+            if len(replay_buffer) >= min_buffer_len:
+                train(Q, Q_target, replay_buffer, device, 
+                        optimizer=optimizer,
+                        batch_size=batch_size,
+                        learning_rate=learning_rate)
+
+                if (t+1) % target_update_period == 0:
+                    for target_param, local_param in zip(Q_target.parameters(), Q.parameters()):
+                            target_param.data.copy_(tau*local_param.data + (1.0 - tau)*target_param.data)
+                
             if done:
                 break
 
-        if len(replay_buffer) >= min_buffer_len:
-            train(Q, Q_target, replay_buffer, device, 
-                    optimizer=optimizer,
-                    batch_size=batch_size,
-                    learning_rate=learning_rate)
+        epsilon = max(eps_end, epsilon * eps_decay) #Linear annealing
 
         if i % print_per_iter == 0 and i!=0:
             print("n_episode :{}, score : {:.1f}, n_buffer : {}, eps : {:.1f}%".format(
@@ -173,13 +186,11 @@ if __name__ == "__main__":
             score_sum=0.0
 
         # Log the reward
-        writer.add_scalar('Rewards per episodes', 
-                            score, i)
+        writer.add_scalar('Rewards per episodes', score, i)
         score = 0
             
 
-        if i % target_update_period == 0:
-            Q_target.load_state_dict(Q.state_dict())
+
 
     writer.close()
     env.close()

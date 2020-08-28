@@ -22,11 +22,11 @@ else: # Use CPU
 
 
 # load environment
-env = gym.make('MountainCar-v0')
+env = gym.make('LunarLander-v2')
 
-model = dqn.Q_net(state_space=env.observation_space.shape[0], 
+model = ddqn.Q_net(state_space=env.observation_space.shape[0], 
               action_space=env.action_space.n).to(device)
-model.load_state_dict(torch.load('DQN.pth', map_location=device))
+model.load_state_dict(torch.load('DDQN.pth', map_location=device))
 
 # Test setting
 episodes = 1000
@@ -41,7 +41,7 @@ for i_episode in range(episodes):
     done = False
 
     while not done:
-        # env.render()
+        env.render()
         a = model.sample_action(torch.from_numpy(state).float().to(device), epsilon)
         s_prime, r, done, info = env.step(a)
         state = s_prime
