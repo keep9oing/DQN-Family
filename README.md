@@ -39,8 +39,8 @@ D3QN: Silver
 - [x] Double DQN
 - [x] Dueling DQN
 - [x] Dueling Double DQN
-- [ ] PER
+- [x] PER
 - [ ] NoiseNet
 - [ ] C51
 - [ ] Rainbow
-- [ ] CNN
+- [x] CNN
